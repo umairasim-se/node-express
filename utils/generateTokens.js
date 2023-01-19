@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import { v4 } from "uuid";
-import UserSchema from "../models/UserSchema.js";
 
 export const generateJWT = async (userId) => {
   try {
@@ -18,12 +17,6 @@ export const generateJWT = async (userId) => {
       {
         expiresIn: "7d",
       }
-    );
-
-    const user = await UserSchema.findByIdAndUpdate(
-      userId,
-      { refreshToken },
-      { new: true }
     );
 
     return { token, refreshToken };
