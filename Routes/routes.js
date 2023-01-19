@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import UserModel from "../models/UserSchema.js";
 import mongoose from "mongoose";
 import authenticateJWT from "../middleware/AuthenticateJWT.js";
+import { generateJWT } from "../utils/generateTokens.js";
 
 const router = express.Router();
 
@@ -65,14 +66,12 @@ router.post("/login", async (req, res) => {
       return;
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
-      expiresIn: 86400,
-    });
+    const tokens = await generateJWT(user._id);
 
     res.status(200).json({
       status: "Success",
       message: "Login successful",
-      token,
+      tokens,
       id: user._id,
     });
   } catch (error) {
@@ -132,6 +131,24 @@ router.delete("/delete-user/:id", authenticateJWT, async (req, res) => {
     res
       .status(500)
       .json({ message: "Internal server error", status: "failed" });
+  }
+});
+
+router.post("/refresh-token/:id", authenticateJWT, (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const token = jwt.sign({ id }, process.env.SECRET_KEY, {
+      expiresIn: "2h",
+    });
+
+    res.status(200).json({
+      token,
+      message: "Succesfully Generated new Token",
+      status: "success",
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Interal Server Error", status: "failed" });
   }
 });
 

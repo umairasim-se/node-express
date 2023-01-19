@@ -13,10 +13,15 @@ const authenticateJWT = async function (req, res, next) {
           .status(401)
           .json({ message: "Invalid Token", status: "failed" });
       }
-      next();
+
+      if (user.exp < Date.now() / 1000) {
+        res.status(403).json({ message: "Token expired", status: "failed" });
+      } else {
+        next();
+      }
     });
   } else {
-    res.status(400).json({ message: "Invalid Token", status: "failed" });
+    res.status(400).json({ message: "Token not Provided", status: "failed" });
   }
 };
 
