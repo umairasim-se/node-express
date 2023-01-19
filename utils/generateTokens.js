@@ -10,13 +10,13 @@ export const generateJWT = async (userId) => {
     }
 
     const token = jwt.sign({ id: userId }, process.env.SECRET_KEY, {
-      expiresIn: "2h",
+      expiresIn: "2d",
     });
     const refreshToken = jwt.sign(
       { id: userId, token: v4() },
       process.env.SECRET_KEY,
       {
-        expiresIn: "7h",
+        expiresIn: "7d",
       }
     );
 
